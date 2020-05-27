@@ -11,7 +11,7 @@ function onEdit(e) {
   }
   
   if(e.value == "=SUMMARIZE()") {
-    sheet.getRange(e.range.getRow(), 1, 1, summaryColumn+1).setBackground("#000000").setFontColor("#FFFFFF").setFontWeight("bold").setFontSize(12).setHorizontalAlignment("center")
+    sheet.getRange(e.range.getRow(), 1, 1, summaryColumn+1).setBackground("#000000").setFontColor("#FFFFFF").setFontWeight("bold").setFontSize(12).setHorizontalAlignment("center").setBorder(false, false, false, false, true, false, "white", SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
   }
   
   if(e.range.getColumn() == hoursColumn) {
