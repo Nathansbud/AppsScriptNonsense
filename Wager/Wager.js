@@ -36,8 +36,10 @@ function SUMMARIZE() {
     if(values[values.length - 1] == "Summary") {
       break
     }
-     
-    weekSummary[days[values[dateColumn - 1].getDay()]] += values[hoursColumn - 1].getHours() + values[hoursColumn -1].getMinutes() / 60
+    
+    if(typeof values[dateColumn - 1].getMonth == 'function') {
+      weekSummary[days[values[dateColumn - 1].getDay()]] += values[hoursColumn - 1].getHours() + values[hoursColumn -1].getMinutes() / 60
+    }
   }
   
   let output = Object.entries(weekSummary).map(([k, v]) => `${k}: ${timeFormat(v)}`)
