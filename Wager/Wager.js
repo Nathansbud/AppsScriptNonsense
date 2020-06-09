@@ -6,12 +6,18 @@ var summaryColumn = 9
 
 function onEdit(e) {
   let sheet = SpreadsheetApp.getActiveSheet()
-  if(e.range.offset(1, 1 - e.range.columnStart).getValue() == "TOTAL") {
-    e.source.getActiveSheet().insertRowAfter(e.range.rowStart)
+  switch(e.value) {
+    case "=SUMMARIZE()":
+      sheet.getRange(e.range.getRow(), 1, 1, summaryColumn+1).setBackground("#000000").setFontColor("#FFFFFF").setFontWeight("bold").setFontSize(12).setHorizontalAlignment("center").setBorder(false, false, false, false, true, false, "white", SpreadsheetApp.BorderStyle.SOLID_MEDIUM)
+      break
+    case "TIME_NOW":
+    case "/tn":
+      sheet.getActiveCell().setValue(Utilities.formatDate(new Date(), "GMT-7", "HH:mm"))
+      break
   }
   
-  if(e.value == "=SUMMARIZE()") {
-    sheet.getRange(e.range.getRow(), 1, 1, summaryColumn+1).setBackground("#000000").setFontColor("#FFFFFF").setFontWeight("bold").setFontSize(12).setHorizontalAlignment("center").setBorder(false, false, false, false, true, false, "white", SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
+  if(e.range.offset(1, 1 - e.range.columnStart).getValue() == "TOTALS") {
+    e.source.getActiveSheet().insertRowAfter(e.range.rowStart)
   }
   
   if(e.range.getColumn() == hoursColumn) {
@@ -33,7 +39,7 @@ function SUMMARIZE() {
  
   for(let i = currentRow - 1; i > 1; i--) {
     values = sheet.getRange(i, 1, 1, summaryColumn).getValues()[0]
-    if(values[values.length - 1] == "Summary") {
+    if(values.indexOf("Summary") != -1 || values.indexOf("=SUMMARIZE()") != -1) {
       break
     }
     
