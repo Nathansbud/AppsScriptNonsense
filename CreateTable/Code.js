@@ -1,15 +1,16 @@
 //not sure if this is always right, but it seems to hold up pretty well...
 //I figure the 2*arr.length accounts for the cell start/end points (or null terminator) and adding 1 is a 0-index thing? no clue really tho
-const indexOffset = (arr) => arr.reduce((acc, elem) => acc += elem.length, 0) + 2*arr.length+1
+
 
 const icsGreen = {color: {rgbColor: {red: 0.15, green: 0.62, blue: 0.57}}}
 const icsText = {color: {rgbColor: {red: 0.14, green: 0.17, blue: 0.22}}}
 const noColor = {color: {rgbColor: {}}}
 const white = {color: {rgbColor: {red: 1, green: 1, blue: 1}}}
-
 const transparent = {dashStyle: "SOLID", width: {magnitude: 0, unit: "PT"}, color: noColor} 
 
-function makeTable(tableContent=[["Sr. Engineer", 100, "$20", "$2,000"], ["Skrt. Engineer", 100, "$20", "$2,000"]]) {
+const indexOffset = (arr) => arr.reduce((acc, elem) => acc += elem.length, 0) + 2*arr.length+1
+
+function makeTable(tableContent=[["Sr. Engineer", "100", "$20", "$2,000"], ["Skrt. Engineer", "100", "$20", "$2,000"]]) {
   const doc = DocumentApp.getActiveDocument()
   const body = doc.getBody()
   
@@ -33,7 +34,7 @@ function makeTable(tableContent=[["Sr. Engineer", 100, "$20", "$2,000"], ["Skrt.
   const headerBorder = {dashStyle: "SOLID", width: {magnitude: 1, unit: "PT"}, color: icsGreen}
   const noBorder = {dashStyle: "SOLID", width: {magnitude: 1, unit: "PT"}, color: {}}
   
-  const requests = {requests:[{
+  let requests = {requests:[{
     updateTableCellStyle:{
       tableRange: {
         tableCellLocation: {
@@ -118,11 +119,40 @@ function makeTable(tableContent=[["Sr. Engineer", 100, "$20", "$2,000"], ["Skrt.
       },
       textStyle: {
         fontSize: {
-          magnitude: 8,
+          magnitude: 9,
           unit: "PT"
         }
       }
     } 
+  }, {
+    updateParagraphStyle: {
+      paragraphStyle: {
+        alignment: "CENTER"
+      },
+      fields: "alignment",
+      range: {
+        startIndex: tableStart,
+        endIndex: tableStart + indexOffset(tableHeader)
+      }
+    } 
   }]}
+  
+  let io = tableStart + indexOffset(tableHeader) + 1
+  tableContent.concat([tableFooter]).forEach(elem => {
+    requests.requests.push({
+      updateParagraphStyle: {
+        paragraphStyle: {
+          alignment: "END",
+        },
+        fields: "alignment",
+        range: {
+          startIndex: io + indexOffset(elem.slice(0, 1)),
+          endIndex: io + indexOffset(elem)
+        }
+      }
+    })
+    io += indexOffset(elem)
+  }) 
+  
   Docs.Documents.batchUpdate(requests, docId);
 }
